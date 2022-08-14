@@ -9,6 +9,9 @@
   "workspaces": [
     "packages/*"
   ],
+  "scripts": {
+    "build": "turbo run build"
+  },
   "devDependencies": {
     "turbo": "^1.4.3"
   }
