@@ -1,9 +1,14 @@
 {
-  "name": "@prisma-fts/alglia",
+  "name": "@prisma-fts/algolia",
   "version": "0.0.0",
   "description": "This library performs Prisma full-text search in Algolia.",
   "main": "dist/index.js",
   "repository": "git@github.com:aiji42/prisma-fts-middleware.git",
   "author": "aiji42 <aiji42@gmail.com> (https://twitter.com/aiji42_dev)",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^18.7.3",
+    "tsup": "^6.2.2",
+    "typescript": "^4.7.4"
+  }
 }
