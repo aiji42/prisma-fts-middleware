@@ -133,3 +133,7 @@ dist
 
 # turbo
 .turbo
+
+# sqlite
+*.db
+*.db-journal

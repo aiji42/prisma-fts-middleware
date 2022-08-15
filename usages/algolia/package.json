@@ -1,0 +1,21 @@
+{
+  "name": "with-algolia",
+  "version": "0.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "@types/node": "^18.7.6",
+    "prisma": "^4.2.1",
+    "tsx": "^3.8.2",
+    "typescript": "^4.7.4",
+    "vitest": "^0.22.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^4.2.1"
+  },
+  "prisma": {
+    "seed": "tsx ./prisma/seed.ts"
+  }
+}
