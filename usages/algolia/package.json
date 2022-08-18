@@ -13,7 +13,9 @@
     "vitest": "^0.22.0"
   },
   "dependencies": {
-    "@prisma/client": "^4.2.1"
+    "@prisma/client": "^4.2.1",
+    "algoliasearch": "^4.14.2",
+    "dotenv": "^16.0.1"
   },
   "prisma": {
     "seed": "tsx ./prisma/seed.ts"
