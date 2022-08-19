@@ -48,9 +48,10 @@ test("getNewWhereArg", () => {
         content: "fts:bar",
         title: "fts:bar",
       },
-      { content: [1, 2, 3], title: [2, 3, 4] }
+      { content: ["a", "b", "c"], title: ["b", "c", "d"] },
+      "code"
     )
   ).toMatchObject({
-    id: { in: [2, 3] },
+    code: { in: ["b", "c"] },
   });
 });

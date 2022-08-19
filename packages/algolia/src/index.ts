@@ -33,12 +33,13 @@ export const getSearchStringMapping = (
 
 export const getNewWhereArg = (
   originalWhere: WhereInput,
-  searchedMapping: Record<string, Array<string | number> | null | undefined>
+  searchedMapping: Record<string, Array<string | number> | null | undefined>,
+  pk: string = "id"
 ): WhereInput => {
   const mergedMapping = Object.entries(searchedMapping).reduce<
     Record<string, Array<string | number>>
   >((res, [key, value]) => {
-    const idWithIn = key.replace(/[^.]+$/, "id.in");
+    const idWithIn = key.replace(/[^.]+$/, `${pk}.in`);
     if (!res[idWithIn])
       return { ...res, [idWithIn]: Array.isArray(value) ? value : [] };
     return {
