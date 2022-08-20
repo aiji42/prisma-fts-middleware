@@ -1,4 +1,5 @@
 import { flatten, unflatten } from "flat";
+import type { SearchIndex } from "algoliasearch";
 
 type Enumerable<T> = T | Array<T>;
 
@@ -34,7 +35,7 @@ export const getSearchStringMapping = (
 export const getNewWhereArg = (
   originalWhere: WhereInput,
   searchedMapping: Record<string, Array<string | number> | null | undefined>,
-  pk: string = "id"
+  pk = "id"
 ): WhereInput => {
   const mergedMapping = Object.entries(searchedMapping).reduce<
     Record<string, Array<string | number>>
@@ -59,4 +60,28 @@ export const getNewWhereArg = (
   }, {});
 
   return unflatten({ ...flattenWhere, ...mergedMapping });
+};
+
+export const searchByAlgoliaIndexes = async <T extends boolean>(
+  indexes: Record<string, SearchIndex>,
+  mapping: Record<string, string>,
+  pkIsNumber?: T
+): Promise<
+  T extends true ? Record<string, number[]> : Record<string, string[]>
+> => {
+  return Object.fromEntries(
+    await Promise.all(
+      Object.entries(mapping).map(async ([key, val]) => {
+        const [col] = key.match(/[^.]+$/) ?? [];
+        const index = indexes[col];
+        const res = await index.search(val);
+        return [
+          key,
+          res.hits.map(({ objectID }) =>
+            pkIsNumber ? Number(objectID) : objectID
+          ),
+        ];
+      })
+    )
+  );
 };
