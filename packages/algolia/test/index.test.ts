@@ -1,57 +1,44 @@
-import { test, expect } from "vitest";
-import { getSearchStringMapping, getNewWhereArg } from "../src";
+import { test, expect, vi } from "vitest";
+import { searchByAlgoliaIndexes } from "../src";
+import { SearchIndex } from "algoliasearch";
 
-test("getSearchStringMapping", () => {
-  const searches = getSearchStringMapping(["a", "b"], {
-    AND: [{ a: "fts:a1" }],
-    OR: {
-      b: "fts:b2",
-      AND: [{ a: "a3" }, { b: "fts:b4" }, { c: "fts:c5" }],
-      OR: { a: "fts:a6", c: "fts:c7" },
+test("searchByAlgoliaIndexes - 1", async () => {
+  const search = vi.fn();
+  search.mockReturnValue({ hits: [{ objectID: "A" }, { objectID: "B" }] });
+  const res = await searchByAlgoliaIndexes(
+    {
+      content: { search } as unknown as SearchIndex,
     },
-    NOT: [{ AND: [{ a: "fts:a8" }] }],
-    a: "fts:a9",
-    aa: "fts:a10",
-    b: { contains: "fts:b11" },
-    c: "fts:c12",
-  });
+    {
+      content: "foo",
+    }
+  );
 
-  expect(searches).toEqual({
-    "AND.0.a": "a1",
-    "OR.b": "b2",
-    "OR.AND.1.b": "b4",
-    "OR.OR.a": "a6",
-    "NOT.0.AND.0.a": "a8",
-    a: "a9",
-  });
+  expect(search).toBeCalledWith("foo");
+  expect(res).toEqual({ content: ["A", "B"] });
 });
 
-test("getNewWhereArg", () => {
-  expect(
-    getNewWhereArg({ content: "fts:foo" }, { content: [1, 2, 3] })
-  ).toEqual({
-    id: { in: [1, 2, 3] },
-  });
+test("searchByAlgoliaIndexes - 2", async () => {
+  const search1 = vi.fn(),
+    search2 = vi.fn();
+  search1.mockReturnValue({ hits: [{ objectID: "1" }, { objectID: "2" }] });
+  search2.mockReturnValue({ hits: [{ objectID: "3" }, { objectID: "4" }] });
+  const res = await searchByAlgoliaIndexes(
+    {
+      content: { search: search1 } as unknown as SearchIndex,
+      title: { search: search2 } as unknown as SearchIndex,
+    },
+    {
+      "AND.0.content": "foo",
+      "AND.1.title": "bar",
+    },
+    true
+  );
 
-  expect(
-    getNewWhereArg(
-      { AND: [{ content: "fts:foo" }, { content: "fts:bar" }] },
-      { "AND.0.content": [1, 2, 3], "AND.1.content": [4, 5, 6] }
-    )
-  ).toEqual({
-    AND: [{ id: { in: [1, 2, 3] } }, { id: { in: [4, 5, 6] } }],
-  });
-
-  expect(
-    getNewWhereArg(
-      {
-        content: "fts:bar",
-        title: "fts:bar",
-      },
-      { content: ["a", "b", "c"], title: ["b", "c", "d"] },
-      "code"
-    )
-  ).toMatchObject({
-    code: { in: ["b", "c"] },
+  expect(search1).toBeCalledWith("foo");
+  expect(search2).toBeCalledWith("bar");
+  expect(res).toEqual({
+    "AND.0.content": [1, 2],
+    "AND.1.title": [3, 4],
   });
 });
