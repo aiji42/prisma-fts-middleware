@@ -45,11 +45,13 @@ prisma.$use(
 
 ## How to use
 
+You can search for records via Algolia by setting search keywords to the columns specified in the index mapping by prefixing them with `fts:`.
+
 ```ts
 await prisma.person.findMany({
   where: { 
-    content: 'fts:appple'
-    //               ^ it's typo
+    description: 'fts:appple'
+    //                   ^ it's typo
   },
 });
 
@@ -64,8 +66,6 @@ await prisma.person.findMany({
 */
 ```
 
-You can search for records via Algolia by setting search keywords to the columns specified in the index mapping by prefixing them with `fts:`.
-
 ## `algoliaFTS`
 
 Configure the mapping of indexes to be used, synchronization of index objects, etc.  
@@ -78,6 +78,9 @@ prisma.$use(algoliaFTS(indexes, options));
 #### Params
 
 ##### `indexes` (required)
+
+Mapping of indexes to be linked to Algolia.
+Map the Algolia indexes with the model name as the primary key and the column name as the sub key.
 
 ```ts
 prisma.$use(
@@ -92,7 +95,9 @@ prisma.$use(
     },
   })
 );
+```
 
+```ts
 // example
 prisma.$use(
   algoliaFTS({
