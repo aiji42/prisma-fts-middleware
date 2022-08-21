@@ -4,10 +4,13 @@ import { algoliaClient } from "./algoliaClient";
 
 export const prisma = new PrismaClient();
 prisma.$use(
-  algoliaFTS({
-    Post: {
-      title: algoliaClient.initIndex("post"),
-      content: algoliaClient.initIndex("post"),
+  algoliaFTS(
+    {
+      Post: {
+        title: algoliaClient.initIndex("post"),
+        content: algoliaClient.initIndex("post"),
+      },
     },
-  })
+    { syncOn: ["create", "update", "delete"], pKeys: { Post: "id" } }
+  )
 );
