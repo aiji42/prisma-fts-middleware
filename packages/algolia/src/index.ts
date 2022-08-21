@@ -14,7 +14,11 @@ export const searchByAlgoliaIndexes = async <T extends boolean>(
       Object.entries(mapping).map(async ([key, val]) => {
         const [col] = key.match(/[^.]+$/) ?? [];
         const index = indexMapping[col];
-        const res = await index.search(val);
+        const [option] = val.match(/\{.*}$/) ?? ["{}"];
+        const res = await index.search(
+          val.replace(/\{.*}$/, ""),
+          JSON.parse(option)
+        );
         return [
           key,
           res.hits.map(({ objectID }) =>

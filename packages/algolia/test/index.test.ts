@@ -6,7 +6,7 @@ import {
 } from "../src";
 import { SearchIndex } from "algoliasearch";
 
-test("searchByAlgoliaIndexes - singleIndex", async () => {
+test("searchByAlgoliaIndexes - single index", async () => {
   const search = vi.fn();
   search.mockReturnValue({ hits: [{ objectID: "A" }, { objectID: "B" }] });
   const res = await searchByAlgoliaIndexes(
@@ -18,11 +18,27 @@ test("searchByAlgoliaIndexes - singleIndex", async () => {
     }
   );
 
-  expect(search).toBeCalledWith("foo");
+  expect(search).toBeCalledWith("foo", {});
   expect(res).toEqual({ content: ["A", "B"] });
 });
 
-test("searchByAlgoliaIndexes - multiIndexes", async () => {
+test("searchByAlgoliaIndexes - with search options", async () => {
+  const search = vi.fn();
+  search.mockReturnValue({ hits: [{ objectID: "A" }, { objectID: "B" }] });
+  const res = await searchByAlgoliaIndexes(
+    {
+      content: { search } as unknown as SearchIndex,
+    },
+    {
+      content: 'foo{"offset":5}',
+    }
+  );
+
+  expect(search).toBeCalledWith("foo", { offset: 5 });
+  expect(res).toEqual({ content: ["A", "B"] });
+});
+
+test("searchByAlgoliaIndexes - multi indexes and pkIsNumber is true", async () => {
   const search1 = vi.fn(),
     search2 = vi.fn();
   search1.mockReturnValue({ hits: [{ objectID: "1" }, { objectID: "2" }] });
@@ -39,8 +55,8 @@ test("searchByAlgoliaIndexes - multiIndexes", async () => {
     true
   );
 
-  expect(search1).toBeCalledWith("foo");
-  expect(search2).toBeCalledWith("bar");
+  expect(search1).toBeCalledWith("foo", {});
+  expect(search2).toBeCalledWith("bar", {});
   expect(res).toEqual({
     "AND.0.content": [1, 2],
     "AND.1.title": [3, 4],
