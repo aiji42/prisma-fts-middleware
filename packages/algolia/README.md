@@ -10,13 +10,13 @@ It is assumed that you have already set up prisma and prepared your application 
 yarn add algoliasearch @prisma-fts/algolia
 ```
 
-Suppose we have the following `Post` model and further assume that Algolia has a `post` index with `title` and `content` as text data and `id` as `objectId`.
+Suppose we have the following `Person` model and further assume that Algolia has a `person` index with `name` and `descriptin` as text data and `id` as `objectId`.
 
 ```prisma
-model Post {
-  id        Int     @id @default(autoincrement())
-  title     String
-  content   String?
+model Person {
+  id         Int     @id @default(autoincrement())
+  name       String
+  descriptin String
 }
 ```
 
