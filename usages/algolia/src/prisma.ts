@@ -11,6 +11,9 @@ prisma.$use(
         content: algoliaClient.initIndex("post"),
       },
     },
-    { syncOn: ["create", "update", "delete"], pKeys: { Post: "id" } }
+    {
+      syncOn: ["create", "update", "delete"],
+      pKeys: { Post: { name: "id", inNumber: true } },
+    }
   )
 );
