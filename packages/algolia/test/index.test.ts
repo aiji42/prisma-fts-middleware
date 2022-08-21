@@ -93,6 +93,44 @@ test("saveObjectOnAlgolia", async () => {
   expect(saveObject3).toBeCalledWith({ objectID: "A", note: "note" });
 });
 
+test("saveObjectOnAlgolia - Selected data is missing.", () => {
+  expect(() =>
+    saveObjectOnAlgolia(
+      {
+        title: {} as unknown as SearchIndex,
+        content: {} as unknown as SearchIndex,
+      },
+      {
+        code: "A",
+        title: "title",
+      },
+      "code"
+    )
+  ).rejects.toThrowError(
+    Error(
+      "Selected columns are missing for index mapping keys; either omit the select parameter or specify select to cover all index mapping keys and the primary key (code)."
+    )
+  );
+
+  expect(() =>
+    saveObjectOnAlgolia(
+      {
+        title: {} as unknown as SearchIndex,
+        content: {} as unknown as SearchIndex,
+      },
+      {
+        title: "title",
+        content: "content",
+      },
+      "code"
+    )
+  ).rejects.toThrowError(
+    Error(
+      "Selected columns are missing for index mapping keys; either omit the select parameter or specify select to cover all index mapping keys and the primary key (code)."
+    )
+  );
+});
+
 test("deleteObjectOnAlgolia", async () => {
   const deleteObject1 = vi.fn(),
     deleteObject2 = vi.fn(),
@@ -131,4 +169,23 @@ test("deleteObjectOnAlgolia", async () => {
   expect(deleteObject2).toBeCalledWith("A");
   expect(deleteObject3).toHaveBeenCalledOnce();
   expect(deleteObject3).toBeCalledWith("A");
+});
+
+test("deleteObjectOnAlgolia - Primary key is missing.", () => {
+  expect(() =>
+    deleteObjectOnAlgolia(
+      {
+        title: {} as unknown as SearchIndex,
+        content: {} as unknown as SearchIndex,
+      },
+      {
+        title: "title",
+      },
+      "code"
+    )
+  ).rejects.toThrowError(
+    Error(
+      "The selected column does not have a primary key; either omit the select parameter or specify select to cover the primary key (code)."
+    )
+  );
 });
