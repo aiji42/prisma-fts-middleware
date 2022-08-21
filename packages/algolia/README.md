@@ -49,7 +49,7 @@ prisma.$use(
 await prisma.person.findMany({
   where: { 
     content: 'fts:appple'
-    //               ^ typo
+    //               ^ it's typo
   },
 });
 
