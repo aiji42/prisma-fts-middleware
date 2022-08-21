@@ -19,6 +19,7 @@ export const searchByAlgoliaIndexes = async <T extends boolean>(
           val.replace(/\{.*}$/, ""),
           JSON.parse(option)
         );
+        // TODO: display debug log
         return [
           key,
           res.hits.map(({ objectID }) =>
@@ -60,8 +61,9 @@ export const saveObjectOnAlgolia = async (
     };
   }, {});
   await Promise.all(
-    Object.values(objectMapping).map(({ index, object }) =>
-      index.saveObject({ ...object, objectID: data[pk] })
+    Object.values(objectMapping).map(
+      ({ index, object }) => index.saveObject({ ...object, objectID: data[pk] })
+      // TODO: display debug log
     )
   );
 };
@@ -85,6 +87,7 @@ export const deleteObjectOnAlgolia = async (
   }, {});
   await Promise.all(
     Object.values(indexes).map((index) => index.deleteObject(String(data[pk])))
+    // TODO: display debug log
   );
 };
 

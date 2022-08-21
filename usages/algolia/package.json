@@ -4,6 +4,9 @@
   "main": "index.js",
   "license": "MIT",
   "private": true,
+  "scripts": {
+    "dev": "tsx watch ./src/index.ts"
+  },
   "devDependencies": {
     "@tsconfig/node16": "^1.0.3",
     "@types/node": "^18.7.6",
