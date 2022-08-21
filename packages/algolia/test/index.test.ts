@@ -1,8 +1,8 @@
 import { test, expect, vi } from "vitest";
 import {
   searchByAlgoliaIndexes,
-  saveObjectOnAlgoLia,
-  deleteObjectOnAlgoLia,
+  saveObjectOnAlgolia,
+  deleteObjectOnAlgolia,
 } from "../src";
 import { SearchIndex } from "algoliasearch";
 
@@ -47,7 +47,7 @@ test("searchByAlgoliaIndexes - multiIndexes", async () => {
   });
 });
 
-test("saveObjectOnAlgoLia", async () => {
+test("saveObjectOnAlgolia", async () => {
   const saveObject1 = vi.fn(),
     saveObject2 = vi.fn(),
     saveObject3 = vi.fn();
@@ -67,7 +67,7 @@ test("saveObjectOnAlgoLia", async () => {
     saveObject: saveObject3,
   } as unknown as SearchIndex;
 
-  await saveObjectOnAlgoLia(
+  await saveObjectOnAlgolia(
     {
       title: index1,
       content: index1,
@@ -93,7 +93,7 @@ test("saveObjectOnAlgoLia", async () => {
   expect(saveObject3).toBeCalledWith({ objectID: "A", note: "note" });
 });
 
-test("deleteObjectOnAlgoLia", async () => {
+test("deleteObjectOnAlgolia", async () => {
   const deleteObject1 = vi.fn(),
     deleteObject2 = vi.fn(),
     deleteObject3 = vi.fn();
@@ -113,7 +113,7 @@ test("deleteObjectOnAlgoLia", async () => {
     deleteObject: deleteObject3,
   } as unknown as SearchIndex;
 
-  await deleteObjectOnAlgoLia(
+  await deleteObjectOnAlgolia(
     {
       title: index1,
       content: index1,

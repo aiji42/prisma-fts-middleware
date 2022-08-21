@@ -26,11 +26,20 @@ export const searchByAlgoliaIndexes = async <T extends boolean>(
   );
 };
 
-export const saveObjectOnAlgoLia = async (
+export const saveObjectOnAlgolia = async (
   indexMapping: Record<string, SearchIndex>,
   data: Record<string, unknown>,
   pk = "id"
 ) => {
+  const selectedColumns = Object.keys(data);
+  if (
+    !data[pk] ||
+    !Object.keys(indexMapping).every((key) => selectedColumns.includes(key))
+  )
+    throw new Error(
+      `Selected columns are missing for index mapping keys; either omit the select parameter or specify select to cover all index mapping keys and the primary key (${pk}).`
+    );
+
   const objectMapping = Object.entries(indexMapping).reduce<
     Record<string, { index: SearchIndex; object: Record<string, unknown> }>
   >((res, [column, index]) => {
@@ -53,11 +62,16 @@ export const saveObjectOnAlgoLia = async (
   );
 };
 
-export const deleteObjectOnAlgoLia = async (
+export const deleteObjectOnAlgolia = async (
   indexMapping: Record<string, SearchIndex>,
   data: Record<string, unknown>,
   pk = "id"
 ) => {
+  if (!data[pk])
+    throw new Error(
+      `The selected column does not have a primary key; either omit the select parameter or specify select to cover the primary key (${pk}).`
+    );
+
   const indexes = Object.values(indexMapping).reduce<
     Record<string, SearchIndex>
   >((res, index) => {
@@ -79,7 +93,10 @@ export const algoliaFTS =
     if (!params.model || !indexes[params.model]) return next(params);
     const indexMapping = indexes[params.model];
 
-    if (params.action.startsWith("find") && params.args?.where) {
+    if (
+      ["findMany", "findFirst"].includes(params.action) &&
+      params.args?.where
+    ) {
       params.args.where = getNewWhereArg(
         params.args.where,
         await searchByAlgoliaIndexes(
@@ -91,14 +108,14 @@ export const algoliaFTS =
       );
       return next(params);
     }
-    if (params.action === "create") {
+    if (["create", "update"].includes(params.action)) {
       const record = await next(params);
-      await saveObjectOnAlgoLia(indexMapping, record, pk);
+      await saveObjectOnAlgolia(indexMapping, record, pk);
       return;
     }
     if (params.action === "delete") {
       const record = await next(params);
-      await deleteObjectOnAlgoLia(indexMapping, record, pk);
+      await deleteObjectOnAlgolia(indexMapping, record, pk);
       return;
     }
 
