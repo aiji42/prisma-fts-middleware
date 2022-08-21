@@ -16,7 +16,12 @@ const posts = [
 ];
 
 const main = async () => {
-  await prisma.post.deleteMany();
+  // await prisma.post.deleteMany();
+  const records = await prisma.post.findMany();
+  console.log({ records });
+  for (let record of records) {
+    await prisma.post.delete({ where: { id: record.id } });
+  }
 
   await Promise.all(
     posts.map(([title, content]) =>
