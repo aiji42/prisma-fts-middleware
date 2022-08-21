@@ -50,8 +50,8 @@ You can search for records via Algolia by setting search keywords to the columns
 ```ts
 await prisma.person.findMany({
   where: { 
-    description: 'fts:appple'
-    //                   ^ it's typo
+    description: "fts:appple",
+                      // ^ it's typo
   },
 });
 
@@ -65,6 +65,9 @@ await prisma.person.findMany({
 ]
 */
 ```
+
+**Note: It is important to prefix it with `fts:`.**  
+Without it, the query will be directed to a regular database.
 
 ## `algoliaFTS`
 
@@ -131,13 +134,13 @@ prisma.$use(
 );
 
 // The new object is added to the post index.
-await prisma.post.create({ data: { content: '...' } });
+await prisma.post.create({ data: { content: "..." } });
 
-// Updates the index object with objectId of 'xxxxxx'.
-await prisma.post.update({ where: { id: 'xxxxxx' }, data: { content: '...' } });
+// Updates the index object with objectId of "xxxxxx".
+await prisma.post.update({ where: { id: "xxxxxx" }, data: { content: "..." } });
 
-// Deletes the index object with objectId is 'xxxxxx'.
-await prisma.post.delete({ where: { id: 'xxxxxx' } });
+// Deletes the index object with objectId is "xxxxxx".
+await prisma.post.delete({ where: { id: "xxxxxx" } });
 ```
 
 **Note: Operations on multiple records such as `createMany`, `upadateMany`, and `deleteMany` are not supported.**  
@@ -161,9 +164,53 @@ prisma.$use(
       pKeys: {
         Post: { name: "id", isNumber: true },
         Mail: { name: "code", isNumber: false }
-        // it can be imitted; `[model]: { name: 'id', isNumber: false }`
+        // it can be imitted; `[model]: { name: "id", isNumber: false }`
       }
     }
   )
 );
 ```
+
+## Advanced Usage
+
+It is possible to pass [search api parameters](https://www.algolia.com/doc/api-reference/search-api-parameters/) as JSON format after keywords when searching.
+
+```ts
+await prisma.person.findMany({
+  where: { 
+    description: "fts:スティーブジョブス" + JSON.stringify({ queryLanguages: ["ja"] })
+  },
+  // This is the same as `index.search("スティーブ・ジョブス", { queryLanguages: ["ja"] })`.
+});
+```
+
+It can be used in conjunction with other `where` parameters.
+
+```ts
+await prisma.person.findMany({
+  where: {
+    description: "fts:Steve",
+    age: { gte: 60 },
+  },
+});
+```
+
+```ts
+await prisma.post.findMany({
+  where: {
+    OR: [
+      { description: "fts:apple" },
+      { description: "fts:orange" },   
+    ],
+    tags: {
+      some: { name: "fruits" }
+    }, 
+  },
+});
+```
+
+## Contributing
+Please read [CONTRIBUTING.md](https://github.com/aiji42/prisma-fts-middleware/tree/main/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/aiji42/prisma-fts-middleware/tree/main/LICENSE) file for details
