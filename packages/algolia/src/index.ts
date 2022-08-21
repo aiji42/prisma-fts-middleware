@@ -86,7 +86,7 @@ export const deleteObjectOnAlgolia = async (
 
 type Options = {
   syncOn?: Array<"create" | "update" | "delete">;
-  pKeys?: Record<Prisma.ModelName, string>;
+  pKeys?: Record<Prisma.ModelName, { name: string; inNumber?: boolean }>;
 };
 
 export const algoliaFTS =
@@ -97,7 +97,8 @@ export const algoliaFTS =
   async (params, next) => {
     if (!params.model || !indexes[params.model]) return next(params);
     const indexMapping = indexes[params.model];
-    const pk = options?.pKeys?.[params.model] ?? "id";
+    const pk = options?.pKeys?.[params.model].name ?? "id";
+    const pkIsNumber = options?.pKeys?.[params.model].inNumber ?? false;
 
     if (
       ["findMany", "findFirst"].includes(params.action) &&
@@ -108,7 +109,7 @@ export const algoliaFTS =
         await searchByAlgoliaIndexes(
           indexMapping,
           getSearchStringMapping(Object.keys(indexMapping), params.args.where),
-          true
+          pkIsNumber
         ),
         pk
       );
