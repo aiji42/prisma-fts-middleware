@@ -1,12 +1,4 @@
-import "dotenv/config";
-import { PrismaClient } from "@prisma/client";
-import algolia from "algoliasearch";
-
-const algoliaClient = algolia(
-  process.env.ALGOLIA_APPLICATION_ID ?? "",
-  process.env.ALGOLIA_ADMIN_API_KEY ?? ""
-);
-const index = algoliaClient.initIndex("post");
+import { prisma } from "../src/prisma";
 
 const posts = [
   [
@@ -24,15 +16,6 @@ const posts = [
 ];
 
 const main = async () => {
-  const prisma = new PrismaClient();
-  prisma.$use(async (params, next) => {
-    if (params.action === "create") {
-      const { id, ...data } = await next(params);
-      return index.saveObject({ objectID: id, ...data }).catch(console.error);
-    }
-    return next(params);
-  });
-
   await prisma.post.deleteMany();
 
   await Promise.all(
