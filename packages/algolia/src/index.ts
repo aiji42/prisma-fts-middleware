@@ -84,14 +84,20 @@ export const deleteObjectOnAlgolia = async (
   );
 };
 
+type Options = {
+  syncOn?: Array<"create" | "update" | "delete">;
+  pKeys?: Record<Prisma.ModelName, string>;
+};
+
 export const algoliaFTS =
   (
     indexes: Record<Prisma.ModelName, Record<string, SearchIndex>>,
-    pk = "id"
+    options?: Options
   ): Prisma.Middleware =>
   async (params, next) => {
     if (!params.model || !indexes[params.model]) return next(params);
     const indexMapping = indexes[params.model];
+    const pk = options?.pKeys?.[params.model] ?? "id";
 
     if (
       ["findMany", "findFirst"].includes(params.action) &&
@@ -108,12 +114,17 @@ export const algoliaFTS =
       );
       return next(params);
     }
-    if (["create", "update"].includes(params.action)) {
+    if (params.action === "create" && options?.syncOn?.includes("create")) {
       const record = await next(params);
       await saveObjectOnAlgolia(indexMapping, record, pk);
       return;
     }
-    if (params.action === "delete") {
+    if (params.action === "update" && options?.syncOn?.includes("update")) {
+      const record = await next(params);
+      await saveObjectOnAlgolia(indexMapping, record, pk);
+      return;
+    }
+    if (params.action === "delete" && options?.syncOn?.includes("delete")) {
       const record = await next(params);
       await deleteObjectOnAlgolia(indexMapping, record, pk);
       return;
