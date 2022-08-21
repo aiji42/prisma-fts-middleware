@@ -29,7 +29,7 @@ export const searchByAlgoliaIndexes = async <T extends boolean>(
 export const saveObjectOnAlgolia = async (
   indexMapping: Record<string, SearchIndex>,
   data: Record<string, unknown>,
-  pk = "id"
+  pk: string
 ) => {
   const selectedColumns = Object.keys(data);
   if (
@@ -65,7 +65,7 @@ export const saveObjectOnAlgolia = async (
 export const deleteObjectOnAlgolia = async (
   indexMapping: Record<string, SearchIndex>,
   data: Record<string, unknown>,
-  pk = "id"
+  pk: string
 ) => {
   if (!data[pk])
     throw new Error(
