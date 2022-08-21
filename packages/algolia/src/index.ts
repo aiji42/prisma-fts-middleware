@@ -53,6 +53,23 @@ export const saveObjectOnAlgoLia = async (
   );
 };
 
+export const deleteObjectOnAlgoLia = async (
+  indexMapping: Record<string, SearchIndex>,
+  data: Record<string, unknown>,
+  pk = "id"
+) => {
+  const indexes = Object.values(indexMapping).reduce<
+    Record<string, SearchIndex>
+  >((res, index) => {
+    const key = `${index.appId}-${index.indexName}`;
+    if (!res[key]) return { ...res, [key]: index };
+    return res;
+  }, {});
+  await Promise.all(
+    Object.values(indexes).map((index) => index.deleteObject(String(data[pk])))
+  );
+};
+
 export const algoliaFTS =
   (
     indexes: Record<Prisma.ModelName, Record<string, SearchIndex>>,
@@ -62,7 +79,7 @@ export const algoliaFTS =
     if (!params.model || !indexes[params.model]) return next(params);
     const indexMapping = indexes[params.model];
 
-    if (params.action.startsWith("find") && params.args.where) {
+    if (params.action.startsWith("find") && params.args?.where) {
       params.args.where = getNewWhereArg(
         params.args.where,
         await searchByAlgoliaIndexes(
@@ -77,6 +94,12 @@ export const algoliaFTS =
     if (params.action === "create") {
       const record = await next(params);
       await saveObjectOnAlgoLia(indexMapping, record, pk);
+      return;
+    }
+    if (params.action === "delete") {
+      const record = await next(params);
+      await deleteObjectOnAlgoLia(indexMapping, record, pk);
+      return;
     }
 
     return next(params);

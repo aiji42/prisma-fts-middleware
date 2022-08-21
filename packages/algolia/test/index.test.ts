@@ -1,5 +1,9 @@
 import { test, expect, vi } from "vitest";
-import { searchByAlgoliaIndexes, saveObjectOnAlgoLia } from "../src";
+import {
+  searchByAlgoliaIndexes,
+  saveObjectOnAlgoLia,
+  deleteObjectOnAlgoLia,
+} from "../src";
 import { SearchIndex } from "algoliasearch";
 
 test("searchByAlgoliaIndexes - singleIndex", async () => {
@@ -87,4 +91,44 @@ test("saveObjectOnAlgoLia", async () => {
   });
   expect(saveObject2).toBeCalledWith({ objectID: "A", text: "text" });
   expect(saveObject3).toBeCalledWith({ objectID: "A", note: "note" });
+});
+
+test("deleteObjectOnAlgoLia", async () => {
+  const deleteObject1 = vi.fn(),
+    deleteObject2 = vi.fn(),
+    deleteObject3 = vi.fn();
+  const index1 = {
+    appId: "app1",
+    indexName: "index1",
+    deleteObject: deleteObject1,
+  } as unknown as SearchIndex;
+  const index2 = {
+    appId: "app1",
+    indexName: "index2",
+    deleteObject: deleteObject2,
+  } as unknown as SearchIndex;
+  const index3 = {
+    appId: "app2",
+    indexName: "index1",
+    deleteObject: deleteObject3,
+  } as unknown as SearchIndex;
+
+  await deleteObjectOnAlgoLia(
+    {
+      title: index1,
+      content: index1,
+      text: index2,
+      note: index3,
+    },
+    {
+      code: "A",
+    },
+    "code"
+  );
+  expect(deleteObject1).toHaveBeenCalledOnce();
+  expect(deleteObject1).toBeCalledWith("A");
+  expect(deleteObject2).toHaveBeenCalledOnce();
+  expect(deleteObject2).toBeCalledWith("A");
+  expect(deleteObject3).toHaveBeenCalledOnce();
+  expect(deleteObject3).toBeCalledWith("A");
 });
