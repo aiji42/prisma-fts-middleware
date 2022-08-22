@@ -10,7 +10,7 @@ It is assumed that you have already set up prisma and prepared your application 
 yarn add algoliasearch @prisma-fts/algolia
 ```
 
-Suppose we have the following `Person` model and further assume that Algolia has a `person` index with `name` and `descriptin` as text data and `id` as `objectId`.
+Suppose we have the following `Person` model and further assume that Algolia has a `person` index with `name` and `descriptin` as text data and `id` as `objectID`.
 
 ```prisma
 model Person {
@@ -177,10 +177,10 @@ prisma.$use(
 // The new object is added to the post index.
 await prisma.post.create({ data: { content: "..." } });
 
-// Updates the index object with objectId of "xxxxxx".
+// Updates the index object with objectID of "xxxxxx".
 await prisma.post.update({ where: { id: "xxxxxx" }, data: { content: "..." } });
 
-// Deletes the index object with objectId is "xxxxxx".
+// Deletes the index object with objectID is "xxxxxx".
 await prisma.post.delete({ where: { id: "xxxxxx" } });
 ```
 
