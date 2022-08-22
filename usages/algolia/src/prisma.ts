@@ -15,7 +15,7 @@ const middleware = algoliaFTS(
     },
   },
   {
-    syncOn: ["create", "update", "delete"],
+    syncOn: ["create", "update", "delete", "upsert"],
   }
 );
 prisma.$use(middleware);
