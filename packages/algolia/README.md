@@ -17,6 +17,8 @@ model Person {
   id         Int     @id @default(autoincrement())
   name       String
   descriptin String
+  age        Int
+  country    String
 }
 ```
 
@@ -39,6 +41,9 @@ const middleware = algoliaFTS(
       }
     },
   },
+  {
+    syncOn: ["create", "update", "delete"]
+  }
 )
 prisma.$use(middleware);
 ```
@@ -60,7 +65,9 @@ await prisma.person.findMany({
   {
     id: 1,
     title: "Steve Jobs",
-    description: "Steven Paul Jobs was an American entrepreneur, ... He was the co-founder, the chairman, and CEO of Apple; ...and more"
+    description: "Steven Paul Jobs was an American entrepreneur, ... He was the co-founder, the chairman, and CEO of Apple; ...and more",
+    age: 56,
+    country: "US"
   }
 ]
 */
@@ -68,6 +75,8 @@ await prisma.person.findMany({
 
 **Note: It is important to prefix it with `fts:`.**  
 Without it, the query will be directed to a regular database.
+
+If you do a search with a `fts:` prefix, it will bypass that keyword to Algolia for a full-text search. Based on the ID of the object obtained by that search, you can retrieve the actual data by searching the original database.
 
 ## `algoliaFTS`
 
@@ -91,7 +100,9 @@ import { Prisma } from '@prisma/client'
 
 ##### `indexes` (required)
 
-Mapping of indexes to be linked to Algolia.
+Mapping of indexes to be linked to Algolia.  
+The first level is an object with the model name as the key and the index mapping object as the value.  
+Index mapping has the following members.
 
 - `objectID`: Primary key name of the table, such as `id`.
 - `indexes`: Object with column name as key and Algolia index as value.
@@ -189,7 +200,7 @@ await prisma.person.findMany({
 });
 ```
 
-It can be used in conjunction with other `where` parameters.
+It can be used in combination with other prisma search parameters such as `where` and `select`.
 
 ```ts
 await prisma.person.findMany({
@@ -202,6 +213,12 @@ await prisma.person.findMany({
 
 ```ts
 await prisma.post.findMany({
+  select: {
+    id: true,
+    author: true,
+    title: true,
+    createdAt: true,
+  },
   where: {
     OR: [
       { description: "fts:apple" },
