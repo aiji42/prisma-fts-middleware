@@ -55,7 +55,7 @@ You can search for records via Algolia by setting search keywords to the columns
 ```ts
 await prisma.person.findMany({
   where: { 
-    description: "fts:appple",
+    description: "fts:appple ceo",
                       // ^ it's typo
   },
 });
