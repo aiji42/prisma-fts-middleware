@@ -21,26 +21,26 @@ model Person {
 ```
 
 ```ts
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 import { algoliaFTS } from "@prisma-fts/algolia";
 import algolia from "algoliasearch";
 
 const algoliaClient = algoliasearch("YourApplicationID", "YourAdminAPIKey");
 
 const prisma = new PrismaClient();
-prisma.$use(
-  algoliaFTS(
-    {
-      Person: {
+const middleware = algoliaFTS(
+  Prisma.dmmf,
+  {
+    Person: {
+      objectID: 'id',
+      indexes: {
         nane: algoliaClient.initIndex("person"),
         description: algoliaClient.initIndex("person"),
-      },
+      }
     },
-    {
-      pKeys: { Person: { name: "id", isNumber: true } }
-    },
-  )
-);
+  },
+)
+prisma.$use(middleware);
 ```
 
 ## How to use
@@ -75,43 +75,72 @@ Configure the mapping of indexes to be used, synchronization of index objects, e
 The return value of the `algoliaFTS` is used to set the prisma middleware (`.$use`).
 
 ```ts
-prisma.$use(algoliaFTS(indexes, options));
+prisma.$use(algoliaFTS(dmmf, indexes, options));
 ```
 
 #### Params
 
+##### `dmmf` (required)
+
+Need `dmmf` of `Prisma` module exported from `@prisma/client`.
+
+```ts
+import { Prisma } from '@prisma/client'
+// Prisma.dmmf
+```
+
 ##### `indexes` (required)
 
 Mapping of indexes to be linked to Algolia.
-Map the Algolia indexes with the model name as the primary key and the column name as the sub key.
+
+- `objectID`: Primary key name of the table, such as `id`.
+- `indexes`: Object with column name as key and Algolia index as value.
 
 ```ts
 prisma.$use(
-  algoliaFTS({
-    [modelName1]: {
-      [columnName1]: algoliaClient.initIndex("yourIndexName"),
-      [columnName2]: algoliaClient.initIndex("yourIndexName"),
-    },
-    [modelName2]: {
-      [columnName1]: algoliaClient.initIndex("yourIndexName"),
-      [columnName2]: algoliaClient.initIndex("yourIndexName"),
-    },
-  })
+  algoliaFTS(
+    Prisma.dmmf,
+    {
+      [modelName1]: {
+        objectID: 'primaryKey (id column)',
+        indexes: {
+          [columnName1]: algoliaClient.initIndex("yourIndexName"),
+          [columnName2]: algoliaClient.initIndex("yourIndexName"),
+        },
+      },
+      [modelName2]: {
+        objectID: 'primaryKey (id column)',
+        indexes: {
+          [columnName1]: algoliaClient.initIndex("yourIndexName"),
+          [columnName2]: algoliaClient.initIndex("yourIndexName"),
+        },
+      },
+    }
+  )
 );
 ```
 
 ```ts
 // example
 prisma.$use(
-  algoliaFTS({
-    Post: {
-      content: algoliaClient.initIndex("post"),
-    },
-    Mail: {
-      subject: algoliaClient.initIndex("mail"),
-      body: algoliaClient.initIndex("mail"),
-    },
-  })
+  algoliaFTS(
+    Prisma.dmmf,
+    {
+      Post: {
+        objectID: 'id',
+        indexes: {
+          content: algoliaClient.initIndex("post"),
+        },
+      },
+      Mail: {
+        objectID: 'code',
+        indexes: {
+          subject: algoliaClient.initIndex("mail"),
+          body: algoliaClient.initIndex("mail"),
+        },
+      },
+    }
+  )
 );
 ```
 
@@ -122,6 +151,7 @@ prisma.$use(
 ```ts
 prisma.$use(
   algoliaFTS(
+    Prisma.dmmf,
     {
       Post: {
         content: algoliaClient.initIndex("post"),
@@ -145,31 +175,6 @@ await prisma.post.delete({ where: { id: "xxxxxx" } });
 
 **Note: Operations on multiple records such as `createMany`, `upadateMany`, and `deleteMany` are not supported.**  
 It is recommended to synchronize the database and Algolia directly using a database trigger function etc.
-
-- `pKeys` (optional): `Record<Prisma.ModelName, { name: string; inNumber?: boolean }>`
-    - Set `pKeys` if the model you wish to target for full-text search has a primary key name that is not `id` or a type that is not `string`.
-```ts
-prisma.$use(
-  algoliaFTS(
-    {
-      Post: {
-        content: algoliaClient.initIndex("post"),
-      },
-      Mail: {
-        subject: algoliaClient.initIndex("mail"),
-        body: algoliaClient.initIndex("mail"),
-      },
-    },
-    {
-      pKeys: {
-        Post: { name: "id", isNumber: true },
-        Mail: { name: "code", isNumber: false }
-        // it can be imitted; `[model]: { name: "id", isNumber: false }`
-      }
-    }
-  )
-);
-```
 
 ## Advanced Usage
 

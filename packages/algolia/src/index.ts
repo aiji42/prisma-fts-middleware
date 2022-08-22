@@ -1,5 +1,6 @@
 import type { SearchIndex } from "algoliasearch";
 import type { Prisma } from "@prisma/client";
+import type { BaseDMMF } from "@prisma/client/runtime";
 import { getNewWhereArg, getSearchStringMapping } from "./utils";
 
 export const searchByAlgoliaIndexes = async <T extends boolean>(
@@ -90,19 +91,25 @@ export const deleteObjectOnAlgolia = async (
 
 type Options = {
   syncOn?: Array<"create" | "update" | "delete">;
-  pKeys?: Record<Prisma.ModelName, { name: string; inNumber?: boolean }>;
+};
+
+type Indexes = {
+  [modelName: string]: {
+    objectID: string;
+    indexes: { [column: string]: SearchIndex };
+  };
 };
 
 export const algoliaFTS =
-  (
-    indexes: Record<Prisma.ModelName, Record<string, SearchIndex>>,
-    options?: Options
-  ): Prisma.Middleware =>
+  (dmmf: BaseDMMF, indexes: Indexes, options?: Options): Prisma.Middleware =>
   async (params, next) => {
     if (!params.model || !indexes[params.model]) return next(params);
-    const indexMapping = indexes[params.model];
-    const pk = options?.pKeys?.[params.model].name ?? "id";
-    const pkIsNumber = options?.pKeys?.[params.model].inNumber ?? false;
+    const indexMapping = indexes[params.model].indexes;
+    const pk = indexes[params.model].objectID;
+    const pkIsNumber =
+      dmmf.datamodel.models
+        .find(({ name }) => name === params.model)
+        ?.fields.find(({ name }) => name === pk)?.type === "Int";
 
     if (
       ["findMany", "findFirst"].includes(params.action) &&
