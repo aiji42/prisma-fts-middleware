@@ -13,6 +13,7 @@
   "scripts": {
     "build": "turbo run build",
     "test": "turbo run test",
+    "coverage": "turbo run coverage",
     "lint": "turbo run lint",
     "dev": "turbo run dev",
     "prepare": "husky install"

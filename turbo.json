@@ -6,8 +6,13 @@
       "outputs": ["dist/**"]
     },
     "test": {
-      "dependsOn": ["build"],
+      "dependsOn": ["^build"],
       "outputs": [],
+      "inputs": ["src/**/*.ts", "test/**/*.ts"]
+    },
+    "coverage": {
+      "dependsOn": ["^build"],
+      "outputs": ["coverage"],
       "inputs": ["src/**/*.ts", "test/**/*.ts"]
     },
     "lint": {
