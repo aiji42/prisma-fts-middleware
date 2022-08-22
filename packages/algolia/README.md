@@ -133,6 +133,26 @@ prisma.$use(
 
 ```ts
 // example
+
+/*
+model Post {
+  id            Int      @id @default(autoincrement())
+  title         String
+  content       String
+  published     Boolean
+  publishedAt   DateTime
+}
+
+model Mail {
+  code          String   @id @default(uuid())
+  from          String
+  to            String
+  subject       String
+  body          String
+  sentAt        DateTime @default(now())
+}
+*/
+
 prisma.$use(
   algoliaFTS(
     Prisma.dmmf,
