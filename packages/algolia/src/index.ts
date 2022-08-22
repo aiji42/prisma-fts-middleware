@@ -112,7 +112,9 @@ export const algoliaFTS =
         ?.fields.find(({ name }) => name === pk)?.type === "Int";
 
     if (
-      ["findMany", "findFirst"].includes(params.action) &&
+      ["findMany", "findFirst", "groupBy", "count", "aggregate"].includes(
+        params.action
+      ) &&
       params.args?.where
     ) {
       params.args.where = getNewWhereArg(
