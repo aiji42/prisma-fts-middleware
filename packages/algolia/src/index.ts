@@ -90,7 +90,7 @@ export const deleteObjectOnAlgolia = async (
 };
 
 type Options = {
-  syncOn?: Array<"create" | "update" | "delete">;
+  syncOn?: Array<"create" | "update" | "upsert" | "delete">;
 };
 
 type Indexes = {
@@ -129,17 +129,22 @@ export const algoliaFTS =
     if (params.action === "create" && options?.syncOn?.includes("create")) {
       const record = await next(params);
       await saveObjectOnAlgolia(indexMapping, record, pk);
-      return;
+      return record;
+    }
+    if (params.action === "upsert" && options?.syncOn?.includes("upsert")) {
+      const record = await next(params);
+      await saveObjectOnAlgolia(indexMapping, record, pk);
+      return record;
     }
     if (params.action === "update" && options?.syncOn?.includes("update")) {
       const record = await next(params);
       await saveObjectOnAlgolia(indexMapping, record, pk);
-      return;
+      return record;
     }
     if (params.action === "delete" && options?.syncOn?.includes("delete")) {
       const record = await next(params);
       await deleteObjectOnAlgolia(indexMapping, record, pk);
-      return;
+      return record;
     }
 
     return next(params);

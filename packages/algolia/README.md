@@ -40,9 +40,6 @@ const middleware = algoliaFTS(
         description: algoliaClient.initIndex("person"),
       }
     },
-  },
-  {
-    syncOn: ["create", "update", "delete"]
   }
 )
 prisma.$use(middleware);
@@ -177,7 +174,7 @@ prisma.$use(
 
 ##### `options` (optional)
 
-- `syncOn` (optional): `Array<"create" | "update" | "delete">`
+- `syncOn` (optional): `Array<"create" | "update" | "upsert" | "delete">`
    - Set `syncOn` to synchronize indexes when creating, updating, or deleting records.
 ```ts
 prisma.$use(
@@ -189,7 +186,7 @@ prisma.$use(
       },
     },
     {
-      syncOn: ["create", "update", "delete"]
+      syncOn: ["create", "update", "upsert", "delete"]
     }
   )
 );
