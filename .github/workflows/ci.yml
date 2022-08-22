@@ -25,6 +25,8 @@ jobs:
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies 💿
         run: yarn install --frozen-lockfile
+      - name: Run lint 👮‍
+        run: yarn lint
       - name: Run Tests 🧪
         run: yarn coverage
       - name: Report coverage 📏
