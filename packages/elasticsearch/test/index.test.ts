@@ -1,10 +1,13 @@
-import { test, expect, vi } from "vitest";
+import { test, expect, vi, describe, beforeEach } from "vitest";
 import {
   searchByElasticsearchIndexes,
   saveDocOnElasticsearch,
   deleteDocOnElasticsearch,
+  elasticsearchFTS,
 } from "../src";
 import { Client } from "@elastic/elasticsearch";
+import { getSampleDMMF } from "@prisma-fts/algolia/test/__fixtures__/getSampleSchema";
+import { Prisma } from "@prisma/client";
 
 test("searchByElasticsearchIndexes - single index", async () => {
   const search = vi.fn();
@@ -227,4 +230,292 @@ test("deleteDocOnElasticsearch - Primary key is missing.", () => {
       "The selected column does not have a primary key; either omit the select parameter or specify select to cover the primary key (code)."
     )
   );
+});
+
+describe("elasticsearchFTS", async () => {
+  const client = {
+    index: vi.fn(),
+    delete: vi.fn(),
+    search: vi.fn(),
+  };
+  const next = vi.fn();
+  const dmmf = await getSampleDMMF();
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
+
+  test("findMany", async () => {
+    client.search.mockReturnValue({
+      hits: {
+        hits: [
+          { _id: "1" },
+          {
+            _id: "2",
+          },
+        ],
+      },
+    });
+
+    const params = {
+      action: "findMany",
+      model: "Post",
+      args: { where: { content: "fts:apple" } },
+    } as Prisma.MiddlewareParams;
+    await elasticsearchFTS(client as unknown as Client, dmmf, {
+      Post: {
+        docId: "id",
+        indexes: { content: "post_index" },
+      },
+    })(params, next);
+
+    expect(next).toBeCalledWith({
+      ...params,
+      args: {
+        where: { id: { in: [1, 2] } },
+      },
+    });
+  });
+
+  test("update - not sync", async () => {
+    next.mockReturnValue({
+      id: 1,
+      title: "this is title",
+      content: "this is content",
+    });
+
+    const params = {
+      action: "update",
+      model: "Post",
+      args: {
+        where: { id: 1 },
+        data: { title: "this is title", content: "this is content" },
+      },
+    } as Prisma.MiddlewareParams;
+    await elasticsearchFTS(client as unknown as Client, dmmf, {
+      Post: {
+        docId: "id",
+        indexes: { content: "post_index" },
+      },
+    })(params, next);
+
+    expect(client.index).not.toBeCalled();
+  });
+
+  test("update - sync", async () => {
+    next.mockReturnValue({
+      id: 1,
+      title: "this is title",
+      content: "this is content",
+    });
+
+    const params = {
+      action: "update",
+      model: "Post",
+      args: {
+        where: { id: 1 },
+        data: { title: "this is title", content: "this is content" },
+      },
+    } as Prisma.MiddlewareParams;
+    await elasticsearchFTS(
+      client as unknown as Client,
+      dmmf,
+      {
+        Post: {
+          docId: "id",
+          indexes: { content: "post_index" },
+        },
+      },
+      { syncOn: ["update"] }
+    )(params, next);
+
+    expect(client.index).toBeCalledWith({
+      index: "post_index",
+      id: "1",
+      document: {
+        content: "this is content",
+      },
+    });
+  });
+
+  test("upsert - not sync", async () => {
+    next.mockReturnValue({
+      id: 1,
+      title: "this is title",
+      content: "this is content",
+    });
+
+    const params = {
+      action: "upsert",
+      model: "Post",
+      args: {
+        where: { id: 1 },
+        create: { title: "this is title", content: "this is content" },
+        update: { title: "this is title", content: "this is content" },
+      },
+    } as Prisma.MiddlewareParams;
+    await elasticsearchFTS(client as unknown as Client, dmmf, {
+      Post: {
+        docId: "id",
+        indexes: { content: "post_index" },
+      },
+    })(params, next);
+
+    expect(client.index).not.toBeCalled();
+  });
+
+  test("upsert - sync", async () => {
+    next.mockReturnValue({
+      id: 1,
+      title: "this is title",
+      content: "this is content",
+    });
+
+    const params = {
+      action: "upsert",
+      model: "Post",
+      args: {
+        where: { id: 1 },
+        create: { title: "this is title", content: "this is content" },
+        update: { title: "this is title", content: "this is content" },
+      },
+    } as Prisma.MiddlewareParams;
+    await elasticsearchFTS(
+      client as unknown as Client,
+
+      dmmf,
+      {
+        Post: {
+          docId: "id",
+          indexes: { content: "post_index" },
+        },
+      },
+      { syncOn: ["upsert"] }
+    )(params, next);
+
+    expect(client.index).toBeCalledWith({
+      index: "post_index",
+      id: "1",
+      document: {
+        content: "this is content",
+      },
+    });
+  });
+
+  test("create - not sync", async () => {
+    next.mockReturnValue({
+      id: 1,
+      title: "this is title",
+      content: "this is content",
+    });
+
+    const params = {
+      action: "create",
+      model: "Post",
+      args: {
+        where: { id: 1 },
+        data: { title: "this is title", content: "this is content" },
+      },
+    } as Prisma.MiddlewareParams;
+    await elasticsearchFTS(client as unknown as Client, dmmf, {
+      Post: {
+        docId: "id",
+        indexes: { content: "post_index" },
+      },
+    })(params, next);
+
+    expect(client.index).not.toBeCalled();
+  });
+
+  test("create - sync", async () => {
+    next.mockReturnValue({
+      id: 1,
+      title: "this is title",
+      content: "this is content",
+    });
+
+    const params = {
+      action: "create",
+      model: "Post",
+      args: {
+        where: { id: 1 },
+        data: { title: "this is title", content: "this is content" },
+      },
+    } as Prisma.MiddlewareParams;
+    await elasticsearchFTS(
+      client as unknown as Client,
+
+      dmmf,
+      {
+        Post: {
+          docId: "id",
+          indexes: { content: "post_index" },
+        },
+      },
+      { syncOn: ["create"] }
+    )(params, next);
+
+    expect(client.index).toBeCalledWith({
+      index: "post_index",
+      id: "1",
+      document: {
+        content: "this is content",
+      },
+    });
+  });
+
+  test("delete - not sync", async () => {
+    next.mockReturnValue({
+      id: 1,
+      title: "this is title",
+      content: "this is content",
+    });
+
+    const params = {
+      action: "delete",
+      model: "Post",
+      args: {
+        where: { id: 1 },
+      },
+    } as Prisma.MiddlewareParams;
+    await elasticsearchFTS(client as unknown as Client, dmmf, {
+      Post: {
+        docId: "id",
+        indexes: { content: "post_index" },
+      },
+    })(params, next);
+
+    expect(client.index).not.toBeCalled();
+  });
+
+  test("delete - sync", async () => {
+    next.mockReturnValue({
+      id: 1,
+      title: "this is title",
+      content: "this is content",
+    });
+
+    const params = {
+      action: "delete",
+      model: "Post",
+      args: {
+        where: { id: 1 },
+      },
+    } as Prisma.MiddlewareParams;
+    await elasticsearchFTS(
+      client as unknown as Client,
+      dmmf,
+      {
+        Post: {
+          docId: "id",
+          indexes: { content: "post_index" },
+        },
+      },
+      { syncOn: ["delete"] }
+    )(params, next);
+
+    expect(client.delete).toBeCalledWith({
+      index: "post_index",
+      id: "1",
+    });
+  });
 });
