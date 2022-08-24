@@ -7,13 +7,11 @@
     },
     "test": {
       "dependsOn": ["^build"],
-      "outputs": [],
-      "inputs": ["src/**/*.ts", "test/**/*.ts"]
+      "outputs": []
     },
     "coverage": {
       "dependsOn": ["^build"],
-      "outputs": ["coverage"],
-      "inputs": ["src/**/*.ts", "test/**/*.ts"]
+      "outputs": ["coverage"]
     },
     "lint": {
       "outputs": []
