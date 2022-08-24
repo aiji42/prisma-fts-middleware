@@ -1,7 +1,6 @@
 {
-  "name": "@prisma-fts/algolia",
+  "name": "@prisma-fts/core",
   "version": "0.0.0",
-  "description": "This library performs Prisma full-text search in Algolia.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -9,7 +8,7 @@
     "dist"
   ],
   "repository": "git@github.com:aiji42/prisma-fts-middleware.git",
-  "homepage": "https://github.com/aiji42/prisma-fts-middleware/tree/main/packages/algolia",
+  "homepage": "https://github.com/aiji42/prisma-fts-middleware/tree/main/packages/core",
   "author": "aiji42 <aiji42@gmail.com> (https://twitter.com/aiji42_dev)",
   "license": "MIT",
   "scripts": {
@@ -21,13 +20,11 @@
     "lint": "eslint ./src ./test --fix --max-warnings 0"
   },
   "devDependencies": {
-    "@prisma/client": "^4.2.1",
-    "@prisma-fts/core": "*",
     "@tsconfig/node16": "^1.0.3",
+    "@types/flat": "^5.0.2",
     "@types/node": "^18.7.3",
     "@typescript-eslint/eslint-plugin": "^5.33.0",
     "@typescript-eslint/parser": "^5.33.0",
-    "algoliasearch": "^4.14.2",
     "c8": "^7.12.0",
     "eslint": "^8.22.0",
     "eslint-config-prettier": "^8.5.0",
@@ -36,8 +33,7 @@
     "typescript": "^4.7.4",
     "vitest": "^0.21.1"
   },
-  "peerDependencies": {
-    "@prisma/client": ">=4.2.0",
-    "algoliasearch": ">=4.14.0"
+  "dependencies": {
+    "flat": "^5.0.2"
   }
 }

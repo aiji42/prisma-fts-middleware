@@ -1,5 +1,5 @@
 import { test, expect } from "vitest";
-import { getSearchStringMapping, getNewWhereArg } from "../src/utils";
+import { getSearchStringMapping, getNewWhereArg } from "../src";
 
 test("getSearchStringMapping", () => {
   const searches = getSearchStringMapping(["a", "b"], {

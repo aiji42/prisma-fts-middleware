@@ -29,12 +29,18 @@ jobs:
         run: yarn lint
       - name: Run Tests 🧪
         run: yarn coverage
-      - name: Report coverage 📏
+      - name: Report coverage (algolia) 📏
         uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           working-directory: ./packages/algolia
           flags: algolia
+      - name: Report coverage (core) 📏
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          working-directory: ./packages/core
+          flags: core
 
 #  Publish:
 #    runs-on: ubuntu-latest

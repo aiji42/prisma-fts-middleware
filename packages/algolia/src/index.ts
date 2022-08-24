@@ -1,7 +1,7 @@
 import type { SearchIndex } from "algoliasearch";
 import type { Prisma } from "@prisma/client";
 import type { BaseDMMF } from "@prisma/client/runtime";
-import { getNewWhereArg, getSearchStringMapping } from "./utils";
+import { getNewWhereArg, getSearchStringMapping } from "@prisma-fts/core";
 
 export const searchByAlgoliaIndexes = async <T extends boolean>(
   indexMapping: Record<string, SearchIndex>,
