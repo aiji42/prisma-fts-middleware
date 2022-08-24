@@ -9,7 +9,7 @@ type Options = {
 
 type Indexes = {
   [modelName: string]: {
-    objectID: string;
+    docId: string;
     indexes: { [column: string]: string };
   };
 };
@@ -116,7 +116,7 @@ export const elasticsearchFTS =
   async (params, next) => {
     if (!params.model || !indexes[params.model]) return next(params);
     const indexMapping = indexes[params.model].indexes;
-    const pk = indexes[params.model].objectID;
+    const pk = indexes[params.model].docId;
     const pkIsNumber =
       dmmf.datamodel.models
         .find(({ name }) => name === params.model)
