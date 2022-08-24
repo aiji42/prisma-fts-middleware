@@ -35,6 +35,12 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           working-directory: ./packages/algolia
           flags: algolia
+      - name: Report coverage (elasticsearch) 📏
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          working-directory: ./packages/elasticsearch
+          flags: elasticsearch
       - name: Report coverage (core) 📏
         uses: codecov/codecov-action@v2
         with:
