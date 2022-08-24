@@ -9,7 +9,7 @@ const middleware = elasticsearchFTS(
   Prisma.dmmf,
   {
     Post: {
-      objectID: "id",
+      docId: "id",
       indexes: {
         title: "post_index",
         content: "post_index",
