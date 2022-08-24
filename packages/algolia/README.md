@@ -34,7 +34,7 @@ const middleware = algoliaFTS(
   Prisma.dmmf,
   {
     Person: {
-      objectID: 'id',
+      objectID: "id",
       indexes: {
         nane: algoliaClient.initIndex("person"),
         description: algoliaClient.initIndex("person"),
@@ -91,7 +91,7 @@ prisma.$use(algoliaFTS(dmmf, indexes, options));
 Need `dmmf` of `Prisma` module exported from `@prisma/client`.
 
 ```ts
-import { Prisma } from '@prisma/client'
+import { Prisma } from "@prisma/client"
 // Prisma.dmmf
 ```
 
@@ -110,14 +110,14 @@ prisma.$use(
     Prisma.dmmf,
     {
       [modelName1]: {
-        objectID: 'primaryKey (id column)',
+        objectID: "primaryKey (id column)",
         indexes: {
           [columnName1]: algoliaClient.initIndex("yourIndexName"),
           [columnName2]: algoliaClient.initIndex("yourIndexName"),
         },
       },
       [modelName2]: {
-        objectID: 'primaryKey (id column)',
+        objectID: "primaryKey (id column)",
         indexes: {
           [columnName1]: algoliaClient.initIndex("yourIndexName"),
           [columnName2]: algoliaClient.initIndex("yourIndexName"),
@@ -155,13 +155,13 @@ prisma.$use(
     Prisma.dmmf,
     {
       Post: {
-        objectID: 'id',
+        objectID: "id",
         indexes: {
           content: algoliaClient.initIndex("post"),
         },
       },
       Mail: {
-        objectID: 'code',
+        objectID: "code",
         indexes: {
           subject: algoliaClient.initIndex("mail"),
           body: algoliaClient.initIndex("mail"),
@@ -182,6 +182,7 @@ prisma.$use(
     Prisma.dmmf,
     {
       Post: {
+        objectID: "id",
         content: algoliaClient.initIndex("post"),
       },
     },
@@ -213,7 +214,7 @@ await prisma.person.findMany({
   where: { 
     description: "fts:スティーブジョブス" + JSON.stringify({ queryLanguages: ["ja"] })
   },
-  // This is the same as `index.search("スティーブ・ジョブス", { queryLanguages: ["ja"] })`.
+  // This is the same as `index.search("スティーブジョブス", { queryLanguages: ["ja"] })`.
 });
 ```
 
