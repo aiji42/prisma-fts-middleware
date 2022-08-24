@@ -21,8 +21,9 @@
     "lint": "eslint ./src ./test --fix --max-warnings 0"
   },
   "devDependencies": {
-    "@prisma/client": "^4.2.1",
     "@prisma-fts/core": "*",
+    "@prisma/client": "^4.2.1",
+    "@prisma/sdk": "^4.0.0",
     "@tsconfig/node16": "^1.0.3",
     "@types/node": "^18.7.3",
     "@typescript-eslint/eslint-plugin": "^5.33.0",
