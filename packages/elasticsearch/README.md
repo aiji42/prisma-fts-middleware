@@ -1,3 +1,7 @@
+[![codecov](https://codecov.io/gh/aiji42/prisma-fts-middleware/branch/main/graph/badge.svg?token=1CD69HJ95D)](https://codecov.io/gh/aiji42/prisma-fts-middleware)
+
+![prisma-fts](https://github.com/aiji42/prisma-fts-middleware/blob/main/images/hero.png?raw=true)
+
 # @prisma-fts/elasticsearch
 
 This is an enhancement library that allows PrismaClient to perform full-text search of Elasticsearch.
