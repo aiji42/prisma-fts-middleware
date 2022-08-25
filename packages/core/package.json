@@ -17,7 +17,8 @@
     "clean": "rimraf .turbo node_modules dist",
     "test": "vitest run",
     "coverage": "vitest run --coverage",
-    "lint": "eslint ./src ./test --fix --max-warnings 0"
+    "lint": "eslint ./src ./test --fix --max-warnings 0",
+    "release": "semantic-release"
   },
   "devDependencies": {
     "@tsconfig/node16": "^1.0.3",
@@ -35,5 +36,8 @@
   },
   "dependencies": {
     "flat": "^5.0.2"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
