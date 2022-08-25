@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/aiji42/prisma-fts-middleware/branch/main/graph/badge.svg?token=1CD69HJ95D)](https://codecov.io/gh/aiji42/prisma-fts-middleware)
+
 ![prisma-fts](./images/hero.png)
 
 # @prisma-fts
