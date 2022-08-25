@@ -6,21 +6,29 @@
 
 This library performs Prisma full-text search with external tools such as ElasticSearch, OpenSearch, and Algolia.
 
-## For Algolia
+## Libraries
+
+### For Algolia
 
 See [`@prisma-fts/algolia`](https://github.com/aiji42/prisma-fts-middleware/tree/main/packages/algolia)
 
-## For Elasticsearch
+### For Elasticsearch
 
 See [`@prisma-fts/elasticsearch`](https://github.com/aiji42/prisma-fts-middleware/tree/main/packages/elasticsearch)
 
-## For OpenSearch
+### For OpenSearch
 
 Coming soon...
 
-## For Meilisearch
+### For Meilisearch
 
 If there is a need, I will make it, just let me know in an issue.
+
+## Structure
+
+Bypass the query to the search engine using [Prisma middleware](https://www.prisma.io/docs/concepts/components/prisma-client/middleware).
+
+![structure](./images/structure.png)
 
 ## Contributing
 Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
