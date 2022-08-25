@@ -1,3 +1,5 @@
+![prisma-fts](./images/hero.png)
+
 # @prisma-fts
 
 This library performs Prisma full-text search with external tools such as ElasticSearch, OpenSearch, and Algolia.
