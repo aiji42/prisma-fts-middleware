@@ -9,7 +9,7 @@
     "dist"
   ],
   "repository": "git@github.com:aiji42/prisma-fts-middleware.git",
-  "homepage": "https://github.com/aiji42/prisma-fts-middleware/tree/main/packages/algolia",
+  "homepage": "https://github.com/aiji42/prisma-fts-middleware/tree/main/packages/elasticsearch",
   "author": "aiji42 <aiji42@gmail.com> (https://twitter.com/aiji42_dev)",
   "license": "MIT",
   "scripts": {
