@@ -14,7 +14,6 @@
   "license": "MIT",
   "scripts": {
     "build": "tsup",
-    "dev": "tsup --watch",
     "clean": "rimraf .turbo node_modules dist",
     "test": "vitest run",
     "coverage": "vitest run --coverage",

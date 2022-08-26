@@ -15,9 +15,14 @@
     "test": "turbo run test",
     "coverage": "turbo run coverage",
     "lint": "turbo run lint",
-    "dev": "turbo run dev",
+    "dev:algolia": "turbo run --filter with-algolia dev",
+    "dev:elasticsearch": "turbo run --filter with-elasticsearch dev",
     "prepare": "husky install",
-    "release": "turbo run release"
+    "release": "turbo run release",
+    "db:migrate:reset:algolia": "turbo run --filter with-algolia db:migrate:reset",
+    "db:seed:algolia": "turbo run --filter with-algolia db:seed",
+    "db:migrate:reset:elasticsearch": "turbo run --filter with-elasticsearch db:migrate:reset",
+    "db:seed:elasticsearch": "turbo run --filter with-elasticsearch db:seed"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.0.3",

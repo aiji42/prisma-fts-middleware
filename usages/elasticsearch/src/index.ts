@@ -6,7 +6,7 @@ const main = async () => {
       AND: [
         {
           content:
-            "fts:ギンガ ジョバンニ" + JSON.stringify({ operator: "and" }),
+            "fts:ぼんやり ジョバンニ" + JSON.stringify({ operator: "and" }),
         },
       ],
     },

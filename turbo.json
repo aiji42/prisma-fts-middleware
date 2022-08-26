@@ -22,6 +22,18 @@
     "release": {
       "dependsOn": ["build"],
       "cache": false
+    },
+    "db:generate": {
+      "cache": false
+    },
+    "db:migrate:dev": {
+      "cache": false
+    },
+    "db:migrate:reset": {
+      "cache": false
+    },
+    "db:reset": {
+      "cache": false
     }
   }
 }

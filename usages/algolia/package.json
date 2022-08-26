@@ -5,7 +5,11 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "dev": "tsx watch ./src/index.ts"
+    "dev": "tsx watch ./src/index.ts",
+    "db:generate": "yarn prisma generate",
+    "db:migrate:dev": "yarn prisma migrate dev --force",
+    "db:migrate:reset": "yarn prisma migrate reset --force",
+    "db:seed": "yarn prisma db seed"
   },
   "devDependencies": {
     "@tsconfig/node16": "^1.0.3",
@@ -17,6 +21,7 @@
   },
   "dependencies": {
     "@prisma/client": "^4.2.1",
+    "@prisma-fts/algolia": "*",
     "algoliasearch": "^4.14.2",
     "dotenv": "^16.0.1"
   },
