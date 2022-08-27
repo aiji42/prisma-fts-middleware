@@ -1,12 +1,5 @@
 ```bash
-docker-compose up
-docker-compose exec elasticsearch bash
-# on the service container
-bin/elasticsearch-plugin install analysis-kuromoji
-bin/elasticsearch-plugin install analysis-icu
-exit
-# on the host
-docker-compose restart elasticsearch
+docker-compose up --profile elasticsearch
 ```
 
 ---

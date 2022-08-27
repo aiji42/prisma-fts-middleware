@@ -2,7 +2,9 @@ version: "3.8"
 
 services:
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.3.3
+    build:
+      dockerfile: ./docker/Dockerfile.elasticsearch
+      context: .
     ports:
       - 9200:9200
     environment:
@@ -14,6 +16,8 @@ services:
         hard: -1
     volumes:
       - es-data:/usr/share/elasticsearch/data
+    profiles:
+      - elasticsearch
 
   kibana:
     image: docker.elastic.co/kibana/kibana:8.3.3
@@ -21,6 +25,8 @@ services:
       ELASTICSEARCH_HOSTS: http://elasticsearch:9200
     ports:
       - 5601:5601
+    profiles:
+      - elasticsearch
 
 volumes:
   es-data:
