@@ -225,7 +225,7 @@ It is possible to pass [search api parameters](https://github.com/elastic/elasti
 ```ts
 await prisma.person.findMany({
   where: { 
-    description: "fts:cats dogs" + JSON.stringify({ operation: "and" })
+    description: "fts:cats dogs" + JSON.stringify({ operator: "and" })
   },
   // This is the same as 
   // esClient.search({ 
@@ -234,7 +234,7 @@ await prisma.person.findMany({
   //     match: {
   //       description: {
   //         query: "cats dogs",
-  //         operation: "and",
+  //         operator: "and",
   //       },
   //     }
   //   }
