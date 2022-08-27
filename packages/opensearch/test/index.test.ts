@@ -1,18 +1,20 @@
 import { test, expect, vi, describe, beforeEach } from "vitest";
 import {
-  searchByElasticsearchIndexes,
-  saveDocOnElasticsearch,
-  deleteDocOnElasticsearch,
-  elasticsearchFTS,
+  searchByOpenSearchIndexes,
+  saveDocOnOpenSearch,
+  deleteDocOnOpenSearch,
+  openSearchFTS,
 } from "../src";
-import { Client } from "@elastic/elasticsearch";
+import { Client } from "@opensearch-project/opensearch";
 import { getSampleDMMF } from "./__fixtures__/getSampleSchema";
 import { Prisma } from "@prisma/client";
 
-test("searchByElasticsearchIndexes - single index", async () => {
+test("searchByOpenSearchIndexes - single index", async () => {
   const search = vi.fn();
-  search.mockReturnValue({ hits: { hits: [{ _id: "A" }, { _id: "B" }] } });
-  const res = await searchByElasticsearchIndexes(
+  search.mockReturnValue({
+    body: { hits: { hits: [{ _id: "A" }, { _id: "B" }] } },
+  });
+  const res = await searchByOpenSearchIndexes(
     { search } as unknown as Client,
     {
       content: "post_index",
@@ -24,10 +26,12 @@ test("searchByElasticsearchIndexes - single index", async () => {
 
   expect(search).toBeCalledWith({
     index: "post_index",
-    query: {
-      match: {
-        content: {
-          query: "foo",
+    body: {
+      query: {
+        match: {
+          content: {
+            query: "foo",
+          },
         },
       },
     },
@@ -35,10 +39,12 @@ test("searchByElasticsearchIndexes - single index", async () => {
   expect(res).toEqual({ content: ["A", "B"] });
 });
 
-test("searchByElasticsearchIndexes - with search options", async () => {
+test("searchByOpenSearchIndexes - with search options", async () => {
   const search = vi.fn();
-  search.mockReturnValue({ hits: { hits: [{ _id: "A" }, { _id: "B" }] } });
-  const res = await searchByElasticsearchIndexes(
+  search.mockReturnValue({
+    body: { hits: { hits: [{ _id: "A" }, { _id: "B" }] } },
+  });
+  const res = await searchByOpenSearchIndexes(
     { search } as unknown as Client,
     {
       content: "post_index",
@@ -50,11 +56,13 @@ test("searchByElasticsearchIndexes - with search options", async () => {
 
   expect(search).toBeCalledWith({
     index: "post_index",
-    query: {
-      match: {
-        content: {
-          query: "foo",
-          operation: "and",
+    body: {
+      query: {
+        match: {
+          content: {
+            query: "foo",
+            operation: "and",
+          },
         },
       },
     },
@@ -62,14 +70,14 @@ test("searchByElasticsearchIndexes - with search options", async () => {
   expect(res).toEqual({ content: ["A", "B"] });
 });
 
-test("searchByElasticsearchIndexes - multi indexes and pkIsNumber is true", async () => {
+test("searchByOpenSearchIndexes - multi indexes and pkIsNumber is true", async () => {
   const search = vi.fn();
   search.mockImplementation((arg) => {
-    if (arg.query.match.content)
-      return { hits: { hits: [{ _id: "1" }, { _id: "2" }] } };
-    return { hits: { hits: [{ _id: "3" }, { _id: "4" }] } };
+    if (arg.body.query.match.content)
+      return { body: { hits: { hits: [{ _id: "1" }, { _id: "2" }] } } };
+    return { body: { hits: { hits: [{ _id: "3" }, { _id: "4" }] } } };
   });
-  const res = await searchByElasticsearchIndexes(
+  const res = await searchByOpenSearchIndexes(
     { search } as unknown as Client,
     {
       content: "post_index",
@@ -84,20 +92,24 @@ test("searchByElasticsearchIndexes - multi indexes and pkIsNumber is true", asyn
 
   expect(search).toBeCalledWith({
     index: "post_index",
-    query: {
-      match: {
-        content: {
-          query: "foo",
+    body: {
+      query: {
+        match: {
+          content: {
+            query: "foo",
+          },
         },
       },
     },
   });
   expect(search).toBeCalledWith({
     index: "post_index",
-    query: {
-      match: {
-        title: {
-          query: "bar",
+    body: {
+      query: {
+        match: {
+          title: {
+            query: "bar",
+          },
         },
       },
     },
@@ -108,9 +120,9 @@ test("searchByElasticsearchIndexes - multi indexes and pkIsNumber is true", asyn
   });
 });
 
-test("saveDocOnElasticsearch", async () => {
+test("saveDocOnOpenSearch", async () => {
   const index = vi.fn();
-  await saveDocOnElasticsearch(
+  await saveDocOnOpenSearch(
     { index } as unknown as Client,
     {
       title: "post_index_1",
@@ -131,7 +143,7 @@ test("saveDocOnElasticsearch", async () => {
   expect(index).toBeCalledWith({
     index: "post_index_1",
     id: "A",
-    document: {
+    body: {
       title: "title",
       content: "content",
     },
@@ -139,22 +151,22 @@ test("saveDocOnElasticsearch", async () => {
   expect(index).toBeCalledWith({
     index: "post_index_2",
     id: "A",
-    document: {
+    body: {
       text: "text",
     },
   });
   expect(index).toBeCalledWith({
     index: "post_index_3",
     id: "A",
-    document: {
+    body: {
       note: "note",
     },
   });
 });
 
-test("saveDocOnElasticsearch - Selected data is missing.", () => {
+test("saveDocOnOpenSearch - Selected data is missing.", () => {
   expect(() =>
-    saveDocOnElasticsearch(
+    saveDocOnOpenSearch(
       {} as unknown as Client,
       {
         title: "post_index",
@@ -173,7 +185,7 @@ test("saveDocOnElasticsearch - Selected data is missing.", () => {
   );
 
   expect(() =>
-    saveDocOnElasticsearch(
+    saveDocOnOpenSearch(
       {} as unknown as Client,
       {
         title: "post_index",
@@ -192,9 +204,9 @@ test("saveDocOnElasticsearch - Selected data is missing.", () => {
   );
 });
 
-test("deleteDocOnElasticsearch", async () => {
+test("deleteDocOnOpenSearch", async () => {
   const _delete = vi.fn();
-  await deleteDocOnElasticsearch(
+  await deleteDocOnOpenSearch(
     { delete: _delete } as unknown as Client,
     {
       title: "post_index_1",
@@ -212,9 +224,9 @@ test("deleteDocOnElasticsearch", async () => {
   expect(_delete).toBeCalledWith({ index: "post_index_3", id: "A" });
 });
 
-test("deleteDocOnElasticsearch - Primary key is missing.", () => {
+test("deleteDocOnOpenSearch - Primary key is missing.", () => {
   expect(() =>
-    deleteDocOnElasticsearch(
+    deleteDocOnOpenSearch(
       {} as unknown as Client,
       {
         title: "post_index",
@@ -232,7 +244,7 @@ test("deleteDocOnElasticsearch - Primary key is missing.", () => {
   );
 });
 
-describe("elasticsearchFTS", async () => {
+describe("openSearchFTS", async () => {
   const client = {
     index: vi.fn(),
     delete: vi.fn(),
@@ -246,13 +258,15 @@ describe("elasticsearchFTS", async () => {
 
   test("findMany", async () => {
     client.search.mockReturnValue({
-      hits: {
-        hits: [
-          { _id: "1" },
-          {
-            _id: "2",
-          },
-        ],
+      body: {
+        hits: {
+          hits: [
+            { _id: "1" },
+            {
+              _id: "2",
+            },
+          ],
+        },
       },
     });
 
@@ -261,7 +275,7 @@ describe("elasticsearchFTS", async () => {
       model: "Post",
       args: { where: { content: "fts:apple" } },
     } as Prisma.MiddlewareParams;
-    await elasticsearchFTS(client as unknown as Client, dmmf, {
+    await openSearchFTS(client as unknown as Client, dmmf, {
       Post: {
         docId: "id",
         indexes: { content: "post_index" },
@@ -291,7 +305,7 @@ describe("elasticsearchFTS", async () => {
         data: { title: "this is title", content: "this is content" },
       },
     } as Prisma.MiddlewareParams;
-    await elasticsearchFTS(client as unknown as Client, dmmf, {
+    await openSearchFTS(client as unknown as Client, dmmf, {
       Post: {
         docId: "id",
         indexes: { content: "post_index" },
@@ -316,7 +330,7 @@ describe("elasticsearchFTS", async () => {
         data: { title: "this is title", content: "this is content" },
       },
     } as Prisma.MiddlewareParams;
-    await elasticsearchFTS(
+    await openSearchFTS(
       client as unknown as Client,
       dmmf,
       {
@@ -331,7 +345,7 @@ describe("elasticsearchFTS", async () => {
     expect(client.index).toBeCalledWith({
       index: "post_index",
       id: "1",
-      document: {
+      body: {
         content: "this is content",
       },
     });
@@ -353,7 +367,7 @@ describe("elasticsearchFTS", async () => {
         update: { title: "this is title", content: "this is content" },
       },
     } as Prisma.MiddlewareParams;
-    await elasticsearchFTS(client as unknown as Client, dmmf, {
+    await openSearchFTS(client as unknown as Client, dmmf, {
       Post: {
         docId: "id",
         indexes: { content: "post_index" },
@@ -379,7 +393,7 @@ describe("elasticsearchFTS", async () => {
         update: { title: "this is title", content: "this is content" },
       },
     } as Prisma.MiddlewareParams;
-    await elasticsearchFTS(
+    await openSearchFTS(
       client as unknown as Client,
 
       dmmf,
@@ -395,7 +409,7 @@ describe("elasticsearchFTS", async () => {
     expect(client.index).toBeCalledWith({
       index: "post_index",
       id: "1",
-      document: {
+      body: {
         content: "this is content",
       },
     });
@@ -416,7 +430,7 @@ describe("elasticsearchFTS", async () => {
         data: { title: "this is title", content: "this is content" },
       },
     } as Prisma.MiddlewareParams;
-    await elasticsearchFTS(client as unknown as Client, dmmf, {
+    await openSearchFTS(client as unknown as Client, dmmf, {
       Post: {
         docId: "id",
         indexes: { content: "post_index" },
@@ -441,7 +455,7 @@ describe("elasticsearchFTS", async () => {
         data: { title: "this is title", content: "this is content" },
       },
     } as Prisma.MiddlewareParams;
-    await elasticsearchFTS(
+    await openSearchFTS(
       client as unknown as Client,
 
       dmmf,
@@ -457,7 +471,7 @@ describe("elasticsearchFTS", async () => {
     expect(client.index).toBeCalledWith({
       index: "post_index",
       id: "1",
-      document: {
+      body: {
         content: "this is content",
       },
     });
@@ -477,7 +491,7 @@ describe("elasticsearchFTS", async () => {
         where: { id: 1 },
       },
     } as Prisma.MiddlewareParams;
-    await elasticsearchFTS(client as unknown as Client, dmmf, {
+    await openSearchFTS(client as unknown as Client, dmmf, {
       Post: {
         docId: "id",
         indexes: { content: "post_index" },
@@ -501,7 +515,7 @@ describe("elasticsearchFTS", async () => {
         where: { id: 1 },
       },
     } as Prisma.MiddlewareParams;
-    await elasticsearchFTS(
+    await openSearchFTS(
       client as unknown as Client,
       dmmf,
       {

@@ -1,21 +1,20 @@
 [![codecov](https://codecov.io/gh/aiji42/prisma-fts-middleware/branch/main/graph/badge.svg?token=1CD69HJ95D)](https://codecov.io/gh/aiji42/prisma-fts-middleware)
-[![npm version](https://badge.fury.io/js/@prisma-fts%2Felasticsearch.svg)](https://badge.fury.io/js/@prisma-fts%2Felasticsearch)
 
 ![prisma-fts](https://github.com/aiji42/prisma-fts-middleware/blob/main/images/hero.png?raw=true)
 
-# @prisma-fts/elasticsearch
+# @prisma-fts/opensearch
 
-This is an enhancement library that allows PrismaClient to perform full-text search of Elasticsearch.
+This is an enhancement library that allows PrismaClient to perform full-text search of OpenSearch.
 
 ## Setup
 
-It is assumed that you have already set up prisma and prepared your index mappings on Elasticsearch.
+It is assumed that you have already set up prisma and prepared your index mappings on OpenSearch.
 
 ```bash
-yarn add  @elastic/elasticsearch @prisma-fts/elasticsearch
+yarn add @opensearch-project/opensearch @prisma-fts/opensearch
 ```
 
-Suppose we have the following `Person` model and further assume that Elasticsearch has a `person_index` index mapping with `name` and `descriptin` as text data and `id` as `_id` (document key).
+Suppose we have the following `Person` model and further assume that OpenSearch has a `person_index` index mapping with `name` and `descriptin` as text data and `id` as `_id` (document key).
 
 ```prisma
 model Person {
@@ -29,14 +28,14 @@ model Person {
 
 ```ts
 import { PrismaClient, Prisma } from "@prisma/client";
-import { elasticsearchFTS } from "@prisma-fts/elasticsearch";
-import { Client } from "@elastic/elasticsearch";
+import { openSearchFTS } from "@prisma-fts/opensearch";
+import { Client } from "@opensearch-project/opensearch";
 
-const esClient = new Client({ /* your client option */ });
+const osClient = new Client({ /* your client option */ });
 
 const prisma = new PrismaClient();
-const middleware = elasticsearchFTS(
-  esClient,
+const middleware = openSearchFTS(
+  osClient,
   Prisma.dmmf,
   {
     Person: {
@@ -53,7 +52,7 @@ prisma.$use(middleware);
 
 ## How to use
 
-You can search for records via Elasticsearch by setting search keywords to the columns specified in the index mapping by prefixing them with `fts:`.
+You can search for records via OpenSearch by setting search keywords to the columns specified in the index mapping by prefixing them with `fts:`.
 
 ```ts
 await prisma.person.findMany({
@@ -79,22 +78,22 @@ await prisma.person.findMany({
 **Note: It is important to prefix it with `fts:`.**  
 Without it, the query will be directed to a regular database.
 
-If you do a search with a `fts:` prefix, it will bypass that keyword to Elasticsearch for a full-text search. Based on the ID of the object obtained by that search, you can retrieve the actual data by searching the original database.
+If you do a search with a `fts:` prefix, it will bypass that keyword to OpenSearch for a full-text search. Based on the ID of the object obtained by that search, you can retrieve the actual data by searching the original database.
 
-## `elasticsearchFTS`
+## `openSearchFTS`
 
 Configure the mapping of indexes to be used, synchronization of documents, etc.  
-The return value of the `elasticsearchFTS` is used to set the prisma middleware (`.$use`).
+The return value of the `openSearchFTS` is used to set the prisma middleware (`.$use`).
 
 ```ts
-prisma.$use(elasticsearchFTS(client, dmmf, indexes, options));
+prisma.$use(openSearchFTS(client, dmmf, indexes, options));
 ```
 
 #### Params
 
 ##### `clietn` (required)
 
-Set your elasticsearch client instance.
+Set your OpenSearch client instance.
 
 ##### `dmmf` (required)
 
@@ -107,17 +106,17 @@ import { Prisma } from "@prisma/client"
 
 ##### `indexes` (required)
 
-Mapping of indexes to be linked to Elasticsearch.  
+Mapping of indexes to be linked to OpenSearch.  
 The first level is an object with the model name as the key and the index mapping object as the value.  
 Index mapping has the following members.
 
 - `docId`: Primary key name of the table, such as `id`.
-- `indexes`: Object with column name as key and Elasticsearch index name as value.
+- `indexes`: Object with column name as key and OpenSearch index name as value.
 
 ```ts
 prisma.$use(
-  elasticsearchFTS(
-    esClient,
+  openSearchFTS(
+    osClient,
     Prisma.dmmf,
     {
       [modelName1]: {
@@ -162,8 +161,8 @@ model Mail {
 */
 
 prisma.$use(
-  elasticsearchFTS(
-    esClient,
+  openSearchFTS(
+    osClient,
     Prisma.dmmf,
     {
       Post: {
@@ -190,8 +189,8 @@ prisma.$use(
     - Set `syncOn` to synchronize indexes when creating, updating, or deleting records.
 ```ts
 prisma.$use(
-  elasticsearchFTS(
-    esClient,
+  openSearchFTS(
+    osClient,
     Prisma.dmmf,
     {
       Post: {
@@ -216,11 +215,11 @@ await prisma.post.delete({ where: { id: "xxxxxx" } });
 ```
 
 **Note: Operations on multiple records such as `createMany`, `upadateMany`, and `deleteMany` are not supported.**  
-It is recommended to synchronize the database and Elasticsearch directly using a database trigger function etc.
+It is recommended to synchronize the database and OpenSearch directly using a database trigger function etc.
 
 ## Advanced Usage
 
-It is possible to pass [search api parameters](https://github.com/elastic/elasticsearch-js/blob/main/src/api/types.ts#L5253) as JSON format after keywords when searching.
+It is possible to pass [optional query fields](https://opensearch.org/docs/latest/opensearch/query-dsl/full-text/#optional-query-fields) as JSON format after keywords when searching.
 
 ```ts
 await prisma.person.findMany({
@@ -228,14 +227,16 @@ await prisma.person.findMany({
     description: "fts:cats dogs" + JSON.stringify({ operator: "and" })
   },
   // This is the same as 
-  // esClient.search({ 
+  // osClient.search({ 
   //   index: "post_index",
-  //   query: {
-  //     match: {
-  //       description: {
-  //         query: "cats dogs",
-  //         operator: "and",
-  //       },
+  //   body: {
+  //     query: {
+  //       match: {
+  //         description: {
+  //           query: "cats dogs",
+  //           operator: "and",
+  //         },
+  //       }
   //     }
   //   }
   // }).

@@ -1,0 +1,31 @@
+{
+  "name": "with-opensearch",
+  "version": "0.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch ./src/index.ts",
+    "db:generate": "yarn prisma generate",
+    "db:migrate:dev": "yarn prisma migrate dev --force",
+    "db:migrate:reset": "yarn prisma migrate reset --force",
+    "db:seed": "yarn prisma db seed"
+  },
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "@types/node": "^18.7.6",
+    "prisma": "^4.2.1",
+    "tsx": "^3.8.2",
+    "typescript": "^4.7.4",
+    "vitest": "^0.22.0"
+  },
+  "dependencies": {
+    "@opensearch-project/opensearch": "^2.0.0",
+    "@prisma-fts/opensearch": "*",
+    "@prisma/client": "^4.2.1",
+    "dotenv": "^16.0.1"
+  },
+  "prisma": {
+    "seed": "tsx ./prisma/seed.ts"
+  }
+}

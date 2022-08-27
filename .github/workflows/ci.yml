@@ -41,6 +41,12 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           working-directory: ./packages/elasticsearch
           flags: elasticsearch
+      - name: Report coverage (opensearch) 📏
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          working-directory: ./packages/opensearch
+          flags: opensearch
       - name: Report coverage (core) 📏
         uses: codecov/codecov-action@v2
         with:

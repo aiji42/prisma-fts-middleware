@@ -18,7 +18,7 @@ See [`@prisma-fts/elasticsearch`](https://github.com/aiji42/prisma-fts-middlewar
 
 ### For OpenSearch
 
-Coming soon...
+See [`@prisma-fts/opensearch`](https://github.com/aiji42/prisma-fts-middleware/tree/main/packages/opensearch)
 
 ### For Meilisearch
 
