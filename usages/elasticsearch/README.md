@@ -1,5 +1,5 @@
 ```bash
-docker-compose up --profile elasticsearch
+docker-compose --profile elasticsearch up
 ```
 
 ---
