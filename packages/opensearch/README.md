@@ -1,4 +1,5 @@
 [![codecov](https://codecov.io/gh/aiji42/prisma-fts-middleware/branch/main/graph/badge.svg?token=1CD69HJ95D)](https://codecov.io/gh/aiji42/prisma-fts-middleware)
+[![npm version](https://badge.fury.io/js/@prisma-fts%2Fopensearch.svg)](https://badge.fury.io/js/@prisma-fts%2Fopensearch)
 
 ![prisma-fts](https://github.com/aiji42/prisma-fts-middleware/blob/main/images/hero.png?raw=true)
 
