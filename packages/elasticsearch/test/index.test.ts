@@ -6,7 +6,7 @@ import {
   elasticsearchFTS,
 } from "../src";
 import { Client } from "@elastic/elasticsearch";
-import { getSampleDMMF } from "@prisma-fts/algolia/test/__fixtures__/getSampleSchema";
+import { getSampleDMMF } from "./__fixtures__/getSampleSchema";
 import { Prisma } from "@prisma/client";
 
 test("searchByElasticsearchIndexes - single index", async () => {
